@@ -6,10 +6,11 @@
   },
   "deploy": {
     "healthcheckPath": "/health",
-    "healthcheckTimeout": 300,
-    "healthcheckInitialDelay": 30,
+    "healthcheckTimeout": 60,
+    "healthcheckInitialDelay": 90,
     "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+    "restartPolicyMaxRetries": 5,
+    "startCommand": "python railway_start.py"
   },
   "environments": {
     "production": {

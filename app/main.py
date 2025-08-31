@@ -85,14 +85,32 @@ async def health_check():
     global request_count
     request_count += 1
     
-    return {
-        "success": True,
-        "status": "healthy",
-        "timestamp": time.time(),
-        "uptime": time.time() - start_time,
-        "requests_processed": request_count,
-        "version": "1.1.0"
-    }
+    try:
+        # Basic health check - just return success
+        health_data = {
+            "success": True,
+            "status": "healthy",
+            "timestamp": time.time(),
+            "uptime": time.time() - start_time,
+            "requests_processed": request_count,
+            "version": "1.1.0",
+            "environment": settings.ENVIRONMENT
+        }
+        
+        print(f"✅ Health check passed - Request #{request_count}")
+        return health_data
+        
+    except Exception as e:
+        print(f"❌ Health check failed: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "status": "unhealthy",
+                "error": str(e),
+                "timestamp": time.time()
+            }
+        )
 
 # API information endpoint
 @app.get("/")
