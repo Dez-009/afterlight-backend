@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from typing import List, Optional
 import os
+from pydantic import field_validator
 
 class Settings(BaseSettings):
     # Application
@@ -20,20 +21,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # CORS
-    ALLOWED_ORIGINS: List[str] = [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "https://afterlight.app",
-        "https://www.afterlight.app"
-    ]
+    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:3001,https://afterlight.app,https://www.afterlight.app"
     
     # Trusted hosts for production
-    ALLOWED_HOSTS: List[str] = [
-        "localhost",
-        "127.0.0.1",
-        "afterlight.app",
-        "www.afterlight.app"
-    ]
+    ALLOWED_HOSTS: str = "localhost,127.0.0.1,afterlight.app,www.afterlight.app"
     
     # Database
     DATABASE_URL: Optional[str] = None
@@ -57,7 +48,7 @@ class Settings(BaseSettings):
     # File upload
     MAX_FILE_SIZE: int = 5 * 1024 * 1024  # 5MB
     UPLOAD_DIR: str = "uploads"
-    ALLOWED_FILE_TYPES: List[str] = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+    ALLOWED_FILE_TYPES: str = "image/jpeg,image/png,image/gif,image/webp"
     
     # Rate limiting
     RATE_LIMIT_WINDOW: int = 60  # seconds
@@ -76,11 +67,39 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None
+    EMAIL_FROM: str = "noreply@afterlight.app"
     
     # Print services (for keepsakes)
     PRINTFUL_API_KEY: Optional[str] = None
     LOB_API_KEY: Optional[str] = None
     
+    # Frontend configuration
+    FRONTEND_URL: str = "http://localhost:3000"
+    
+    # Development settings
+    ENABLE_DEBUG_ROUTES: bool = True
+    
+    @property
+    def allowed_origins_list(self) -> List[str]:
+        """Convert ALLOWED_ORIGINS string to list"""
+        if isinstance(self.ALLOWED_ORIGINS, str):
+            return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(',') if origin.strip()]
+        return self.ALLOWED_ORIGINS
+    
+    @property
+    def allowed_hosts_list(self) -> List[str]:
+        """Convert ALLOWED_HOSTS string to list"""
+        if isinstance(self.ALLOWED_HOSTS, str):
+            return [host.strip() for host in self.ALLOWED_HOSTS.split(',') if host.strip()]
+        return self.ALLOWED_HOSTS
+    
+    @property
+    def allowed_file_types_list(self) -> List[str]:
+        """Convert ALLOWED_FILE_TYPES string to list"""
+        if isinstance(self.ALLOWED_FILE_TYPES, str):
+            return [file_type.strip() for file_type in self.ALLOWED_FILE_TYPES.split(',') if file_type.strip()]
+        return self.ALLOWED_FILE_TYPES
+
     class Config:
         env_file = ".env"
         case_sensitive = True

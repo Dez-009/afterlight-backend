@@ -42,5 +42,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
     CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
-# Use the railway start script
-CMD ["python", "railway_start.py"]
+# Use the universal start script that works with both Railway and Render
+CMD ["python", "universal_start.py"]
